@@ -17,10 +17,10 @@ isOnMasterBranch()
 
 appendMsgTo1stLine()
 {
-    if [ -s $1 ]; then
-        sed -i '1s/$/ '$2'/' $1
+    if [ -s "$1" ]; then
+        sed -i '1s/$/ '"$2"'/' "$1"
     else
-        echo $2 > $1
+        echo "$2" > "$1"
     fi
 }
 
