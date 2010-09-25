@@ -14,3 +14,4 @@ isOnMasterBranch()
     fi
     return 1
 }
+

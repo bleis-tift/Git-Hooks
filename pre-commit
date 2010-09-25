@@ -1,0 +1,12 @@
+#! /bin/sh
+
+. ./common.sh
+
+isOnMasterBranch
+if [ $? -eq 0 ]; then
+    echo "can't commit on master branch."
+    echo "please commit on topic branch."
+    exit 1
+fi
+
+exit 0
