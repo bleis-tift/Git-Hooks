@@ -29,4 +29,32 @@ test_isOnMasterBranch()
     git branch -D hoge >/dev/null
 }
 
+test_appendMsgTo1stLine()
+{
+    # 2行のパターン
+    cat << EOF > ./fortest.txt
+first line
+second line
+EOF
+
+    appendMsgTo1stLine fortest.txt "hoge"
+    assertEquals "first line hoge" "$(cat ./fortest.txt | head -1)"
+    assertEquals "second line" "$(cat ./fortest.txt | head -2 | tail -1)"
+
+    # 1行のパターン
+    echo "first line" > ./fortest.txt
+
+    appendMsgTo1stLine fortest.txt "piyo"
+    assertEquals "first line piyo" "$(cat ./fortest.txt)"
+
+    # 空のパターン
+    rm ./fortest.txt
+    touch ./fortest.txt
+
+    appendMsgTo1stLine fortest.txt "foo"
+    assertEquals "foo" "$(cat ./fortest.txt)"
+
+    rm ./fortest.txt
+}
+
 . ./shunit2/src/shell/shunit2
