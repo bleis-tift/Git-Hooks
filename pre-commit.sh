@@ -7,3 +7,10 @@ getGitBranchName()
     echo ${branch##refs/heads/}
 }
 
+isOnMasterBranch()
+{
+    if [ "$(getGitBranchName)" = "master" ]; then
+        return 0
+    fi
+    return 1
+}
