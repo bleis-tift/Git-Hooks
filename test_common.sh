@@ -57,4 +57,31 @@ EOF
     rm ./fortest.txt
 }
 
+test_extractTicketId()
+{
+    git checkout master 2>/dev/null
+    assertEquals "" "$(extractTicketId)"
+
+    git checkout -b ref/42 2>/dev/null
+    assertEquals "ref 42" "$(extractTicketId)"
+
+    # 前は一階層のみ階層化可能
+    git checkout -b bug/ref/10 2>/dev/null
+    assertEquals "ref 10" "$(extractTicketId)"
+
+    # 後ろはどれだけついてもOK
+    git checkout -b ref/9/some/description 2>/dev/null
+    assertEquals "ref 9" "$(extractTicketId)"
+
+    # 両方ついてもOK
+    git checkout -b issue/ref/8/some/description 2>/dev/null
+    assertEquals "ref 8" "$(extractTicketId)"
+
+    git checkout master 2>/dev/null
+    git branch -D ref/42 >/dev/null
+    git branch -D bug/ref/10 >/dev/null
+    git branch -D ref/9/some/description >/dev/null
+    git branch -D issue/ref/8/some/description >/dev/null
+}
+
 . ./shunit2/src/shell/shunit2
