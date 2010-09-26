@@ -90,14 +90,14 @@ test_hasTicketId()
     touch test4hasticketid1
     git add .
     git commit -m "without ticket id." >/dev/null
-    hash="$(git log -1 | head -1 | cut -d ' ' -f 2)"
-    assertEquals "false" "$(hasTicketId ${hash})"
+    hash="$(git log -1 | head -1)"
+    assertEquals "false" "$(hasTicketId ${hash##commit })"
 
     touch test4hasticketid2
     git add .
     git commit -m "with ticket id. ref 42" >/dev/null
-    hash="$(git log -1 | head -1 | cut -d ' ' -f 2)"
-    assertEquals "true" "$(hasTicketId ${hash})"
+    hash="$(git log -1 | head -1)"
+    assertEquals "true" "$(hasTicketId ${hash##commit })"
 
     git checkout master 2>/dev/null
     git branch -D "test/for/hasTicketId" >/dev/null
@@ -106,12 +106,12 @@ test_hasTicketId()
 test_extractParents()
 {
     git checkout -b "test/for/extractParents" 2>/dev/null
-    old="$(git log -1 | head -1 | cut -d ' ' -f 2)"
+    old="$(git log -1 | head -1)"
     touch test4extractparents
     git add .
     git commit -m "test" >/dev/null
-    new="$(git log -1 | head -1 | cut -d ' ' -f 2)"
-    assertEquals ${old} "$(extractParents ${new})"
+    new="$(git log -1 | head -1)"
+    assertEquals ${old##commit } "$(extractParents ${new##commit })"
 
     git checkout master 2>/dev/null
     git branch -D "test/for/extractParents" >/dev/null
