@@ -103,4 +103,18 @@ test_hasTicketId()
     git branch -D "test/for/hasTicketId" >/dev/null
 }
 
+test_extractParents()
+{
+    git checkout -b "test/for/extractParents" 2>/dev/null
+    old="$(git log -1 | head -1 | cut -d ' ' -f 2)"
+    touch test4extractparents
+    git add .
+    git commit -m "test" >/dev/null
+    new="$(git log -1 | head -1 | cut -d ' ' -f 2)"
+    assertEquals ${old} "$(extractParents ${new})"
+
+    git checkout master 2>/dev/null
+    git branch -D "test/for/extractParents" >/dev/null
+}
+
 . ./shunit2/src/shell/shunit2

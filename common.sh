@@ -43,3 +43,9 @@ hasTicketId()
     fi
 }
 
+extractParents()
+{
+    git cat-file -p $1 \
+    | grep '^parent [0-9a-f]\{40\}$' | cut -d ' ' -f 2
+}
+
