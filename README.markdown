@@ -24,7 +24,7 @@ test_から始まる各種ファイルはテストです。
 shunit2というのを使っていて、これがLGPL v2.1なので、
 こいつらの扱いはLGPLになるんでしょうか？
 スクリプトファイルに対するLGPLはよくわかりませんが、
-test_から始まるファイルはLGPLということにしておきます。
+これらはLGPLということにしておきます。
 
 shunit2ディレクトリはshunit2のソース含めすべて入っています。
 shunit2は [http://code.google.com/p/shunit2/](http://code.google.com/p/shunit2/) で配布されています。
