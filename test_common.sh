@@ -84,4 +84,23 @@ test_extractTicketId()
     git branch -D issue/ref/8/some/description >/dev/null
 }
 
+test_hasTicketId()
+{
+    git checkout -b "test/for/hasTicketId" 2>/dev/null
+    touch test4hasticketid1
+    git add .
+    git commit -m "without ticket id." >/dev/null
+    hash="$(git log -1 | head -1 | cut -d ' ' -f 2)"
+    assertEquals "false" "$(hasTicketId ${hash})"
+
+    touch test4hasticketid2
+    git add .
+    git commit -m "with ticket id. ref 42" >/dev/null
+    hash="$(git log -1 | head -1 | cut -d ' ' -f 2)"
+    assertEquals "true" "$(hasTicketId ${hash})"
+
+    git checkout master 2>/dev/null
+    git branch -D "test/for/hasTicketId" >/dev/null
+}
+
 . ./shunit2/src/shell/shunit2

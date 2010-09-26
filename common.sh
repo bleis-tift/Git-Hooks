@@ -30,3 +30,16 @@ extractTicketId()
     | awk '/(.+\/)?ref\/[0-9]+(\/.+)?/' | sed 's/.*ref\/\([0-9]*\).*/ref \1/'
 }
 
+hasTicketId()
+{
+    first="$(git cat-file -p $1 \
+    | sed '1,/^$/d' | head -1 \
+    | sed '/.*ref [0-9][0-9]*.*/!d')"
+
+    if [ -n "${first}" ]; then
+        echo "true"
+    else
+        echo "false"
+    fi
+}
+
