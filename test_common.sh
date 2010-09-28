@@ -63,19 +63,19 @@ test_extractTicketId()
     assertEquals "" "$(extractTicketId)"
 
     git checkout -b ref/42 2>/dev/null
-    assertEquals "ref 42" "$(extractTicketId)"
+    assertEquals "refs 42" "$(extractTicketId)"
 
     # 前は一階層のみ階層化可能
     git checkout -b bug/ref/10 2>/dev/null
-    assertEquals "ref 10" "$(extractTicketId)"
+    assertEquals "refs 10" "$(extractTicketId)"
 
     # 後ろはどれだけついてもOK
     git checkout -b ref/9/some/description 2>/dev/null
-    assertEquals "ref 9" "$(extractTicketId)"
+    assertEquals "refs 9" "$(extractTicketId)"
 
     # 両方ついてもOK
     git checkout -b issue/ref/8/some/description 2>/dev/null
-    assertEquals "ref 8" "$(extractTicketId)"
+    assertEquals "refs 8" "$(extractTicketId)"
 
     git checkout master 2>/dev/null
     git branch -D ref/42 >/dev/null
@@ -95,7 +95,7 @@ test_hasTicketId()
 
     touch test4hasticketid2
     git add .
-    git commit -m "with ticket id. ref 42" >/dev/null
+    git commit -m "with ticket id. refs 42" >/dev/null
     hash="$(git log -1 | head -1)"
     assertEquals "true" "$(hasTicketId ${hash##commit })"
 
