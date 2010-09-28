@@ -1,6 +1,12 @@
 #! /bin/sh
 
-. ./common.sh
+if [ -n "${GIT_DIR}" ]; then
+    hooksdir="./${GIT_DIR}/hooks/"
+else
+    hooksdir="./"
+fi
+
+. "${hooksdir}common.sh"
 
 isOnMasterBranch
 if [ $? -eq 0 ]; then
