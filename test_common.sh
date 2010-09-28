@@ -4,29 +4,29 @@
 
 test_getGitBranchName()
 {
-    git checkout master 2>/dev/null
+    git checkout master >/dev/null 2>&1
     assertEquals "master" "$(getGitBranchName)"
 
-    git checkout -b hoge 2>/dev/null
+    git checkout -b hoge >/dev/null 2>&1
     assertEquals "hoge" "$(getGitBranchName)"
 
-    git checkout master 2>/dev/null
-    git branch -D hoge >/dev/null
+    git checkout master >/dev/null 2>&1
+    git branch -D hoge >/dev/null 2>&1
     assertEquals "master" "$(getGitBranchName)"
 }
 
 test_isOnMasterBranch()
 {
-    git checkout master 2>/dev/null
+    git checkout master >/dev/null 2>&1
     isOnMasterBranch
     assertEquals 0 $?
 
-    git checkout -b hoge 2>/dev/null
+    git checkout -b hoge >/dev/null 2>&1
     isOnMasterBranch
     assertEquals 1 $?
 
-    git checkout master 2>/dev/null
-    git branch -D hoge >/dev/null
+    git checkout master >/dev/null 2>&1
+    git branch -D hoge >/dev/null 2>&1
 }
 
 test_appendMsgTo1stLine()
@@ -59,62 +59,62 @@ EOF
 
 test_extractTicketId()
 {
-    git checkout master 2>/dev/null
+    git checkout master >/dev/null 2>&1
     assertEquals "" "$(extractTicketId)"
 
-    git checkout -b ref/42 2>/dev/null
+    git checkout -b ref/42 >/dev/null 2>&1
     assertEquals "refs 42" "$(extractTicketId)"
 
     # 前は一階層のみ階層化可能
-    git checkout -b bug/ref/10 2>/dev/null
+    git checkout -b bug/ref/10 >/dev/null 2>&1
     assertEquals "refs 10" "$(extractTicketId)"
 
     # 後ろはどれだけついてもOK
-    git checkout -b ref/9/some/description 2>/dev/null
+    git checkout -b ref/9/some/description >/dev/null 2>&1
     assertEquals "refs 9" "$(extractTicketId)"
 
     # 両方ついてもOK
-    git checkout -b issue/ref/8/some/description 2>/dev/null
+    git checkout -b issue/ref/8/some/description >/dev/null 2>&1
     assertEquals "refs 8" "$(extractTicketId)"
 
-    git checkout master 2>/dev/null
-    git branch -D ref/42 >/dev/null
-    git branch -D bug/ref/10 >/dev/null
-    git branch -D ref/9/some/description >/dev/null
-    git branch -D issue/ref/8/some/description >/dev/null
+    git checkout master >/dev/null 2>&1
+    git branch -D ref/42 >/dev/null 2>&1
+    git branch -D bug/ref/10 >/dev/null 2>&1
+    git branch -D ref/9/some/description >/dev/null 2>&1
+    git branch -D issue/ref/8/some/description >/dev/null 2>&1
 }
 
 test_hasTicketId()
 {
-    git checkout -b "test/for/hasTicketId" 2>/dev/null
+    git checkout -b "test/for/hasTicketId" >/dev/null 2>&1
     touch test4hasticketid1
     git add .
-    git commit -m "without ticket id." >/dev/null
+    git commit -m "without ticket id." >/dev/null 2>&1
     hash="$(git log -1 | head -1)"
     assertEquals "false" "$(hasTicketId ${hash##commit })"
 
     touch test4hasticketid2
     git add .
-    git commit -m "with ticket id. refs 42" >/dev/null
+    git commit -m "with ticket id. refs 42" >/dev/null 2>&1
     hash="$(git log -1 | head -1)"
     assertEquals "true" "$(hasTicketId ${hash##commit })"
 
-    git checkout master 2>/dev/null
-    git branch -D "test/for/hasTicketId" >/dev/null
+    git checkout master >/dev/null 2>&1
+    git branch -D "test/for/hasTicketId" >/dev/null 2>&1
 }
 
 test_extractParents()
 {
-    git checkout -b "test/for/extractParents" 2>/dev/null
+    git checkout -b "test/for/extractParents" >/dev/null 2>&1
     old="$(git log -1 | head -1)"
     touch test4extractparents
     git add .
-    git commit -m "test" >/dev/null
+    git commit -m "test" >/dev/null 2>&1
     new="$(git log -1 | head -1)"
     assertEquals ${old##commit } "$(extractParents ${new##commit })"
 
-    git checkout master 2>/dev/null
-    git branch -D "test/for/extractParents" >/dev/null
+    git checkout master >/dev/null 2>&1
+    git branch -D "test/for/extractParents" >/dev/null 2>&1
 }
 
 . ./shunit2/src/shell/shunit2
