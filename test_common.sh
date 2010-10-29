@@ -62,26 +62,26 @@ test_extractTicketId()
     git checkout master >/dev/null 2>&1
     assertEquals "" "$(extractTicketId)"
 
-    git checkout -b ref/42 >/dev/null 2>&1
+    git checkout -b id/42 >/dev/null 2>&1
     assertEquals "refs 42" "$(extractTicketId)"
 
     # 前は一階層のみ階層化可能
-    git checkout -b bug/ref/10 >/dev/null 2>&1
+    git checkout -b bug/id/10 >/dev/null 2>&1
     assertEquals "refs 10" "$(extractTicketId)"
 
     # 後ろはどれだけついてもOK
-    git checkout -b ref/9/some/description >/dev/null 2>&1
+    git checkout -b id/9/some/description >/dev/null 2>&1
     assertEquals "refs 9" "$(extractTicketId)"
 
     # 両方ついてもOK
-    git checkout -b issue/ref/8/some/description >/dev/null 2>&1
+    git checkout -b issue/id/8/some/description >/dev/null 2>&1
     assertEquals "refs 8" "$(extractTicketId)"
 
     git checkout master >/dev/null 2>&1
-    git branch -D ref/42 >/dev/null 2>&1
-    git branch -D bug/ref/10 >/dev/null 2>&1
-    git branch -D ref/9/some/description >/dev/null 2>&1
-    git branch -D issue/ref/8/some/description >/dev/null 2>&1
+    git branch -D id/42 >/dev/null 2>&1
+    git branch -D bug/id/10 >/dev/null 2>&1
+    git branch -D id/9/some/description >/dev/null 2>&1
+    git branch -D issue/id/8/some/description >/dev/null 2>&1
 }
 
 test_hasTicketId()

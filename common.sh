@@ -27,7 +27,7 @@ appendMsgTo1stLine()
 extractTicketId()
 {
     echo "$(getGitBranchName)" \
-    | awk '/(.+\/)?ref\/[0-9]+(\/.+)?/' | sed 's/.*ref\/\([0-9]*\).*/refs \1/'
+    | awk '/(.+\/)?id\/[0-9]+(\/.+)?/' | sed 's/.*id\/\([0-9]*\).*/refs \1/'
 }
 
 hasTicketId()
