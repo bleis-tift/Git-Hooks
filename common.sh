@@ -17,17 +17,21 @@ isOnMasterBranch()
 
 appendMsgTo1stLine()
 {
-    if [ -s "$1" ]; then
-        sed -i '1s/$/ '"$2"'/' "$1"
+    mv $1 $1.$$
+    if [ -s "$1.$$" ]; then
+        sed '1s/$/ '"$2"'/' "$1.$$" > $1
     else
         echo "$2" > "$1"
     fi
+    rm $1.$$
 }
 
 extractTicketId()
 {
     echo "$(getGitBranchName)" \
-    | awk '/(.+\/)?id\/[0-9]+(\/.+)?/' | sed 's/.*id\/\([0-9]*\).*/refs \1/'
+    | awk 'BEGIN{ FS="[/]"}
+           $1 ~ /ref|id/ { printf "refs %s", $2 }
+           $2 ~ /ref|id/ { printf "refs %s", $3 }'
 }
 
 hasTicketId()
