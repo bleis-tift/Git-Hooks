@@ -1,0 +1,12 @@
+#!/bin/sh
+host=https://github.com/bleis-tift/Git-Hooks
+if [[ $(git rev-parse --is-bare-repository) == false ]]; then
+    echo "please run on bare repository"
+    exit 1
+fi
+
+cd $(git rev-parse --show-toplevel)
+for i in update; do
+    echo $i
+    curl -o $i $host/raw/master/$i
+done
