@@ -5,7 +5,7 @@ if [ $(git rev-parse --is-bare-repository) = "false" ]; then
     exit 1
 fi
 
-cd $(git rev-parse --show-toplevel)
+
 for i in update; do
     echo $i
     curl -o hooks/$i $host/raw/master/$i
