@@ -9,4 +9,5 @@ cd $(git rev-parse --show-toplevel)
 for i in update; do
     echo $i
     curl -o $i $host/raw/master/$i
+    chmod a+x $i
 done
