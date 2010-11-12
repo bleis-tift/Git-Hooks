@@ -34,8 +34,8 @@ extractTicketId()
 {
     echo "$(getGitBranchName)" \
     | awk 'BEGIN{ FS="[/]"}
-           $1 ~ /id/ { printf "refs %s", $2 }
-           $2 ~ /id/ { printf "refs %s", $3 }'
+           $1 == "id" { printf "refs %s", $2 }
+           $2 == "id" { printf "refs %s", $3 }'
 }
 
 hasTicketId()
