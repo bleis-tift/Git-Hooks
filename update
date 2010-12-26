@@ -1,18 +1,21 @@
-#! /bin/perl
+#!/usr/bin/env perl
 # 初Perlプログラム!
 # pushされてきたコミット全てにチケットIDが含まれているかどうかを確認します。
 # テスト書いてないので正しく動くかまだ未検証なので注意
 
+use warnings;
+use strict;
+
 # 効率化のために$oldと処理の終わったハッシュ値をハッシュテーブルにでも入れておいて、
 # $crntがハッシュテーブルにすでに含まれている場合、そこの処理を切り上げるとかする？
-$ref = $ARGV[0];
-$old = $ARGV[1];
-$new = $ARGV[2];
+my $ref = $ARGV[0];
+my $old = $ARGV[1];
+my $new = $ARGV[2];
 
 # push, pop, shift, unshiftのどの組み合わせが効率いいのか知らないけど、
 # キュー的に使いたいのと、終了判定が面倒だったのでpushとshiftを選択
-@waiting = $new;
-while ($crnt = shift(@waiting)) {
+my @waiting = $new;
+while ( my $crnt = shift(@waiting) ) {
     # 複数parentを考慮してないので何か問題あるかも？
     # あとで考える
     if ($crnt eq $old) {
@@ -24,7 +27,7 @@ while ($crnt = shift(@waiting)) {
     # なので配列に入れても問題にはならないという判断。というかそれ以外を知らない
     my @lines = `git cat-file -p $crnt`;
     my $index = 0;
-    foreach $line (@lines) {
+    foreach my $line (@lines) {
         # メタ情報のparentで始まる行から、たどるべきハッシュ値を入れる
         if ($line =~ /^parent ([0-9a-f]{40})$/) {
             push @waiting, $1;
