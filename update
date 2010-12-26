@@ -38,7 +38,7 @@ while ($crnt = shift(@waiting)) {
     }
     # 空行の次の行にコミットメッセージの先頭行があるので、
     # その行にチケットIDが含まれているかどうかを確認する
-    unless (@lines[$index + 1] =~ /refs \d+/) {
+    unless ( $lines[$index + 1] =~ /refs \d+/ ) {
 		print "\n";
 		print "+----------------------------------------+\n";
 		print "| please input ticket id to all commits. |\n";
