@@ -105,6 +105,12 @@ Redmine固定とかその他いろいろなところで微妙な部分が多い�
 いい感じにフックスクリプトをcloneしたリポジトリにも配布できる仕組みとか欲しいですね。
 全自動は無理っぽいですけど・・・
 
+クライアント側
+  $ curl https://github.com/bleis-tift/Git-Hooks/raw/master/install-on-client | sh
+
+サーバ側
+  $ curl https://github.com/bleis-tift/Git-Hooks/raw/master/install-on-server | sh
+
 # ライセンス
 
 test_から始まるスクリプトと、shunit2ディレクトリ以下は前述のとおりLGPL(v2.1)です。
