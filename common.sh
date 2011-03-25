@@ -19,11 +19,11 @@ appendMsgTo1stLine()
 {
     mv $1 $1.$$
     if [ -s "$1.$$" ]; then
-	if head -1 "$1.$$" | grep "$2" > /dev/null; then
-	    cp "$1.$$" "$1"
-	else
+    if head -1 "$1.$$" | grep "$2" > /dev/null; then
+        cp "$1.$$" "$1"
+    else
             sed '1s/$/ '"$2"'/' "$1.$$" > $1
-	fi
+    fi
     else
         echo "$2" > "$1"
     fi
