@@ -1,5 +1,9 @@
 #! /bin/sh
 
+if [ -z "$(git branch)" ]; then
+    exit 0
+fi
+
 if [ -n "${GIT_DIR}" ]; then
     hooksdir="./${GIT_DIR}/hooks/"
 else
