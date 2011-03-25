@@ -34,15 +34,15 @@ extractTicketId()
 {
     echo "$(getGitBranchName)" \
     | awk 'BEGIN{ FS="[/]"}
-           $1 == "id" { printf "refs %s", $2 }
-           $2 == "id" { printf "refs %s", $3 }'
+           $1 == "id" { printf "refs #%s", $2 }
+           $2 == "id" { printf "refs #%s", $3 }'
 }
 
 hasTicketId()
 {
     first="$(git cat-file -p $1 \
     | sed '1,/^$/d' | head -1 \
-    | sed '/.*refs [0-9][0-9]*.*/!d')"
+    | sed '/.*refs #[0-9][0-9]*.*/!d')"
 
     if [ -n "${first}" ]; then
         echo "true"
