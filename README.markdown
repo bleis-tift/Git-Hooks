@@ -29,9 +29,9 @@ msysと指定している部分を環境に合わせて指定してください�
 現在はmsysのみです。
 
 構成をカスタマイズする場合や、対応されていない環境にインストールする場合は、
-configsディレクトリ内にInstall-xxx.ymlを作成、編集してください。
+configsディレクトリ内にInstall-xxx.plを作成、編集してください。
 xxxは環境を表し、Install.PLの第一引数として渡す文字列となります。
-Install-xxx.ymlの各設定項目の意味は以下の通りです。
+Install-xxx.plの各設定項目の意味は以下の通りです。
 
 ### gitcmddir
 
@@ -45,11 +45,12 @@ Git-Hooksが使用する環境変数を書き込むファイルを指定して�
 bashを使っている場合は~/.bashrcのままでいいはずです。
 
 この設定はInstall.PLの第二引数により上書き可能です。
+ただし、exportによって環境変数を設定するため、csh系のシェルには対応していません。
 
 ### templatedir
 
 Gitのフックスクリプトのテンプレートを格納しているディレクトリを指定してください。
-基本的には/usr/share/git-core/templatesのままでいいはずです。
+基本的には/usr/share/git-core/templates/hooksのままでいいはずです。
 
 ### githookshome
 

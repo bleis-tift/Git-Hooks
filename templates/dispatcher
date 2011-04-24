@@ -2,7 +2,7 @@
 
 gitdir=$(dirname `cd $(dirname $0); pwd`)
 
-hook="${GIT_HOOKS_BIN_DIR}/$1"
+hook="${GIT_HOOKS_HOME}/hooks/$1"
 shift
 
 if [ -x "$hook" ]; then
