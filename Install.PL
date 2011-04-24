@@ -58,6 +58,7 @@ if ($usesymlink) {
     $rc->close;
 
     # テンプレートのコピー
+    copy "${githookshome}/configs/hooks-list", "${templatedir}/hooks-list";
     copy "${githookshome}/templates/dispatcher", "${templatedir}/dispatcher";
     copy "${githookshome}/templates/common", "${templatedir}/common";
     foreach my $h (`cat "${githookshome}/configs/hooks-list"`) {
@@ -83,6 +84,7 @@ else {
     $rc->close;
 
     # テンプレートのコピー
+    copy "${githookshome}/configs/hooks-list", "${templatedir}/hooks-list";
     copy "${githookshome}/templates/dispatcher", "${templatedir}/dispatcher";
     foreach my $h (`cat "${githookshome}/configs/hooks-list"`) {
         chomp($h);
