@@ -44,7 +44,28 @@ copy "configs/Install-${env}.pl", "${githookshome}/install-config";
 
 # シンボリックリンクが使えるかどうかで分岐
 if ($usesymlink) {
-    # TODO : シンボリックリンクが使える場合は、copyじゃなくてln -sな感じで実装したい
+    # サブコマンドのコピー
+    foreach my $i (`ls ${githookshome}/commands/ln-* 2>/dev/null`) {
+        $i =~ /ln-(.+)/;
+        chomp(my $orig = $i);
+        chomp(my $link = $gitcmddir . '/' . $1);
+        `ln -s "$orig" "$link"`;
+    }
+
+    # GIT_HOOKS_HOMEの設定
+    my $rc = IO::File->new($gitconfig, '>>');
+    $rc->print("export GIT_HOOKS_HOME=\"${githookshome}\"\n");
+    $rc->close;
+
+    # テンプレートのコピー
+    copy "${githookshome}/templates/dispatcher", "${templatedir}/dispatcher";
+    copy "${githookshome}/templates/common", "${templatedir}/common";
+    foreach my $h (`cat "${githookshome}/configs/hooks-list"`) {
+        chomp($h);
+        if ($h ne 'ci') {
+            `ln -s "${githookshome}/templates/common" "${templatedir}/$h`;
+        }
+    }
 }
 else {
     # サブコマンドのコピー
