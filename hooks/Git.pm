@@ -54,4 +54,33 @@ sub is_empty {
     return 1;
 }
 
+{ package Commit;
+    sub new {
+        my $class = shift;
+        my @msgs = split(/\n/, shift);
+        my @parents = ();
+        my $last_parent = 1;
+        foreach my $l (@msgs) {
+            if ($l =~ /^parent ([0-9a-f]{40})$/) {
+                push @parents, $1;
+                $last_parent += 1;
+            }
+        }
+        my $self = { Parents => \@parents, Message => $msgs[$last_parent + 3] };
+        bless $self, $class;
+    }
+    sub contains_ticket {
+        my $self = shift;
+        Git::has_ticket_id($self->{Message});
+    }
+    sub parents {
+        my $self = shift;
+        $self->{Parents};
+    }
+    sub has_parent {
+        my $self = shift;
+        ${$self->{Parents}}[0] ne ('0' x 40);
+    }
+}
+
 1;
