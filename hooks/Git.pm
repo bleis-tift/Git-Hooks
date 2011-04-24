@@ -25,6 +25,14 @@ sub is_master_branch {
     $repos->branch_name eq 'master';
 }
 
+sub extract_ticket_id {
+    my $repos = shift;
+    $_ = $repos->branch_name;
+    if ($_ !~ m"id/\d+") { return ''; }
+    s".*id/(\d+).*"refs #$1";
+    $_;
+}
+
 sub append_msg_to_1st_line {
     my ($msg, $str) = @_;
     $_ = $msg;

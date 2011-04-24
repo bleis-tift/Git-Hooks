@@ -44,4 +44,20 @@ chomp($msg);
 chomp($expected);
 is(Git::append_msg_to_1st_line($msg, 'refs #3456'), $expected);
 
+# チケットIDの抽出
+$branch = 'master';
+is(Git::extract_ticket_id($repos), '');
+
+$branch = 'hoge';
+is(Git::extract_ticket_id($repos), '');
+
+$branch = 'id/1234';
+is(Git::extract_ticket_id($repos), 'refs #1234');
+
+$branch = 'hoge/id/999';
+is(Git::extract_ticket_id($repos), 'refs #999');
+
+$branch = 'hoge/id/42/hogehoge';
+is(Git::extract_ticket_id($repos), 'refs #42');
+
 done_testing;
