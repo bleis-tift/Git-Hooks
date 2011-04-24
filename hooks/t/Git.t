@@ -85,4 +85,32 @@ ok(!Git::has_ticket_id($msg)); # 1行目じゃないとダメ
 chomp($msg);
 ok(!Git::has_ticket_id($msg));
 
+# メッセージが空かどうか
+$msg = 'hoge';
+ok(!Git::is_empty($msg));
+
+$msg = <<EOS
+
+hoge
+EOS
+;
+ok(!Git::is_empty($msg));
+chomp($msg);
+ok(!Git::is_empty($msg));
+
+$msg = '';
+ok(Git::is_empty($msg));
+
+$msg = '   ';
+ok(Git::is_empty($msg));
+
+$msg = <<EOS
+
+# this line is comment
+EOS
+;
+ok(Git::is_empty($msg));
+chomp($msg);
+ok(Git::is_empty($msg));
+
 done_testing;

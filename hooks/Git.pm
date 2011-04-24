@@ -45,4 +45,12 @@ sub has_ticket_id {
     $msg =~ /^[^\r\n]+refs #\d+/;
 }
 
+sub is_empty {
+    my $msg = shift;
+    foreach my $l (split(/\r\n|\r|\n/, $msg)) {
+        if ($l !~ /^#|^\s*$/) { return 0; }
+    }
+    return 1;
+}
+
 1;
