@@ -1,0 +1,25 @@
+#! /usr/bin/env perl
+
+use warnings;
+use strict;
+
+use IO::File;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    our $DIR = dirname($0, '');
+}
+use lib "${main::DIR}";
+
+use Git;
+
+my $gitdir = shift;
+
+if (`git --git-dir="$gitdir" branch` eq '') { exit 0; }
+
+my $repos = Repository->new($gitdir);
+if (Git::is_master_branch($repos)) {
+    print "can't commit on master branch.\n";
+    print "please commit on topic branch.\n";
+    exit 1;
+}
