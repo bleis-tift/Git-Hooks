@@ -60,4 +60,29 @@ is(Git::extract_ticket_id($repos), 'refs #999');
 $branch = 'hoge/id/42/hogehoge';
 is(Git::extract_ticket_id($repos), 'refs #42');
 
+# チケットIDを持っているかどうか
+$msg = 'hogehoge refs #42';
+ok(Git::has_ticket_id($msg));
+
+$msg = 'hogehoge refs #';
+ok(!Git::has_ticket_id($msg));
+
+$msg = <<EOS
+hogepiyo refs #234
+
+foobar
+EOS
+;
+ok(Git::has_ticket_id($msg));
+
+$msg = <<EOS
+hogepiyo
+
+foobar refs #234
+EOS
+;
+ok(!Git::has_ticket_id($msg)); # 1行目じゃないとダメ
+chomp($msg);
+ok(!Git::has_ticket_id($msg));
+
 done_testing;

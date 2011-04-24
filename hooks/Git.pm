@@ -40,4 +40,9 @@ sub append_msg_to_1st_line {
     $_;
 }
 
+sub has_ticket_id {
+    my $msg = shift;
+    $msg =~ /^[^\r\n]+refs #\d+/;
+}
+
 1;
