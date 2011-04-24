@@ -25,4 +25,11 @@ sub is_master_branch {
     $repos->branch_name eq 'master';
 }
 
+sub append_msg_to_1st_line {
+    my ($msg, $str) = @_;
+    $_ = $msg;
+    s/([^\r\n]+)/$1 $str/;
+    $_;
+}
+
 1;
