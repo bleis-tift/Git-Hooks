@@ -33,6 +33,11 @@ $_ = $gitconfig;
 s/~/$ENV{HOME}/;
 $gitconfig = $_;
 
+# なぜかtouchしておかないとディレクトリが作られるので回避
+if ($env eq 'msys' && $gitconfig =~ /\.bashrc/) {
+    `touch ~/.bashrc`;
+}
+
 # 自分自身をgithookshomeにすべてコピー
 unless (-e $gitconfig) { `mkdir -p "$gitconfig"`; }
 unless (-e "${githookshome}/.git") {
@@ -53,9 +58,7 @@ if ($usesymlink) {
     }
 
     # GIT_HOOKS_HOMEの設定
-    my $rc = IO::File->new($gitconfig, '>>');
-    $rc->print("export GIT_HOOKS_HOME=\"${githookshome}\"\n");
-    $rc->close;
+    `echo "export GIT_HOOKS_HOME=\\\"${githookshome}\\\"" >> "$gitconfig"`;
 
     # テンプレートのコピー
     copy "${githookshome}/configs/hooks-list", "${templatedir}/hooks-list";
@@ -79,9 +82,7 @@ else {
     }
 
     # GIT_HOOKS_HOMEの設定
-    my $rc = IO::File->new($gitconfig, '>>');
-    $rc->print("export GIT_HOOKS_HOME=\"${githookshome}\"\n");
-    $rc->close;
+    `echo "export GIT_HOOKS_HOME=\\\"${githookshome}\\\"" >> "$gitconfig"`;
 
     # テンプレートのコピー
     copy "${githookshome}/configs/hooks-list", "${templatedir}/hooks-list";
