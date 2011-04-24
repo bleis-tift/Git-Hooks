@@ -1,6 +1,12 @@
 #! /bin/sh
 
-gitdir=$(dirname `cd $(dirname $0); pwd`)
+hookdir=`cd $(dirname "$0"); pwd`
+gitdir=`dirname "$hookdir"`
+
+cmp "${hookdir}/hooks-list" "${GIT_HOOKS_HOME}/configs/hooks-list" >/dev/null
+if [ $? = 1 ]; then
+    # TODO : templateをアップデートする
+fi
 
 hook="${GIT_HOOKS_HOME}/hooks/$1"
 shift
