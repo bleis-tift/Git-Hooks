@@ -1,0 +1,39 @@
+#! /usr/bin/env perl
+
+use warnings;
+use strict;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    our $DIR = dirname($0, '');
+}
+use lib "${main::DIR}";
+
+use Git;
+
+my $gitdir = shift;
+my $ref = shift;
+my $old = shift;
+my $new = shift;
+
+my $repos = Repository->new($gitdir);
+
+my @waiting = $new;
+while (my $crnt = shift(@waiting)) {
+    next if $crnt eq $old;
+
+    my $commit = Commit->new($repos->get($crnt));
+    if ($commit->has_parent && !$commit->contains_ticket) {
+        print "\n";
+        print "+----------------------------------------+\n";
+        print "| please input ticket id to all commits. |\n";
+        print "+----------------------------------------+\n";
+        print "\n";
+        print "  rejected ref: ", $ref, "\n";
+        print "\n";
+        exit 1;
+    }
+    foreach my $p (@{$commit->parents}) {
+        push(@waiting, $p);
+    }
+}

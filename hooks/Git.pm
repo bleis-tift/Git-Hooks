@@ -19,6 +19,12 @@ use strict;
         s"refs/heads/"";
         $_;
     }
+    sub get {
+        my $self = shift;
+        my $hash = shift;
+        chomp(my $msgs = `git cat-file -p $hash`);
+        $msgs;
+    }
 }
 
 sub is_master_branch {
@@ -79,6 +85,10 @@ sub is_empty {
     }
     sub has_parent {
         my $self = shift;
+        my $count = scalar(@{$self->{Parents}});
+        if ($count == 0) {
+            return 0;
+        }
         ${$self->{Parents}}[0] ne ('0' x 40);
     }
 }

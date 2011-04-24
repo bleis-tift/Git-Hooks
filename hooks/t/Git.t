@@ -155,21 +155,28 @@ EOS
 );
 
 # チケットIDがあるパターン
-$msg = Commit->new($repos->get('cafebabe'));
-ok($msg->contains_ticket);
-ok($msg->has_parent);
-is(${$msg->parents}[0], '1234567890' x 4);
+my $commit = Commit->new($repos->get('cafebabe'));
+ok($commit->contains_ticket);
+ok($commit->has_parent);
+is(${$commit->parents}[0], '1234567890' x 4);
 
 # 根っこのコミットなのでチケットIDはない
-$msg = Commit->new($repos->get('1234567890' x 4));
-ok($msg->contains_ticket == 0);
-ok($msg->has_parent == 0);
-is(${$msg->parents}[0], '0' x 40);
+$commit = Commit->new($repos->get('1234567890' x 4));
+ok($commit->contains_ticket == 0);
+ok($commit->has_parent == 0);
+is(${$commit->parents}[0], '0' x 40);
 
 # 複数の親を持つパターン
-$msg = Commit->new($repos->get('babecafe'));
-ok($msg->contains_ticket);
-is(${$msg->parents}[0], '1' x 40);
-is(${$msg->parents}[1], 'a' x 40);
+$commit = Commit->new($repos->get('babecafe'));
+ok($commit->contains_ticket);
+is(${$commit->parents}[0], '1' x 40);
+is(${$commit->parents}[1], 'a' x 40);
+
+my @ps = ();
+foreach my $p (@{$commit->parents}) {
+    push(@ps, $p);
+}
+is($ps[0], '1' x 40);
+is($ps[1], 'a' x 40);
 
 done_testing;
