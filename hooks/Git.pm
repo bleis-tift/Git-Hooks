@@ -17,6 +17,7 @@ use strict;
         my $dir = $self->{GitDir};
         chomp($_ = `git --git-dir="$dir" symbolic-ref HEAD 2>/dev/null`);
         s"refs/heads/"";
+        $_;
     }
 }
 

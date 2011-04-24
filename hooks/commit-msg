@@ -1,0 +1,30 @@
+#! /usr/bin/env perl
+
+use warnings;
+use strict;
+
+use IO::File;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    our $DIR = dirname($0, '');
+}
+use lib "${main::DIR}";
+
+use Git;
+
+my $gitdir = shift;
+my $msgfile = shift;
+my $msg = `cat "$msgfile"`;
+
+my $repos = Repository->new($gitdir);
+
+if (Git::is_empty($msg)) { exit 0; }
+
+my $ticket = Git::extract_ticket_id($repos);
+if ($ticket eq '') { exit 0; }
+
+$msg = Git::append_msg_to_1st_line($msg, $ticket);
+my $f = IO::File->new($msgfile, 'w');
+$f->print($msg);
+$f->close;
