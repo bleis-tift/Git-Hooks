@@ -1,0 +1,5 @@
+#! /bin/sh
+
+dir=`cd $(dirname $0); pwd`
+name=`basename $0`
+exec "$dir/dispatcher" $name "$@"

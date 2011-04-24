@@ -1,0 +1,10 @@
+#! /bin/sh
+
+gitdir=$(dirname `cd $(dirname $0); pwd`)
+
+hook="${GIT_HOOKS_BIN_DIR}/$1"
+shift
+
+if [ -x "$hook" ]; then
+    exec "$hook" "$gitdir" "$@"
+fi
