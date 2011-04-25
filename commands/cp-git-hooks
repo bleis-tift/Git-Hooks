@@ -5,13 +5,23 @@ use strict;
 
 ################################################################################
 
+sub exec_cmd {
+    my $cmd = shift;
+    chomp(my $res = `$cmd`);
+    $res;
+}
+
 sub git_dir {
     chomp(my $dir = `git rev-parse --git-dir`);
     my $cmd = 'cd $(dirname "' . $dir . '"); pwd';
-    chomp(my $parent = `$cmd`);
-    chomp(my $name = `basename $dir`);
+    my $parent = &exec_cmd('cd $(dirname "' . $dir . '"); pwd');
+    my $name = &exec_cmd('basename "' . $dir . '"');
     "${parent}/$name";
 }
+
+sub list { &exec_cmd('cat "${GIT_HOOKS_HOME}/configs/hooks-list"'); }
+
+sub enabled { &exec_cmd('ls -I dispatcher "' . &git_dir . '/hooks"'); }
 
 ################################################################################
 
@@ -28,14 +38,26 @@ my @args = @ARGV;
 ################################################################################
 
 if ($cmd eq 'list') {
-    system 'cat "${GIT_HOOKS_HOME}/configs/hooks-list"';
+    print &list, "\n";
 }
 elsif ($cmd eq 'enabled') {
-    my $hookdir = &git_dir . '/hooks';
-    chomp(my $res = `ls -I dispatcher "$hookdir"`);
-    print $res, "\n";
+    print &enabled, "\n";
 }
 elsif ($cmd eq 'disabled') {
+    my @list = split(/\r\n|\r|\n/, &list);
+    my @enabled = split(/\r\n|\r|\n/, &enabled);
+
+    my %count = ();
+    foreach (@list, @enabled) { $count{$_}++; }
+    my @diff = ();
+    foreach (keys %count) {
+        if ($count{$_} != 2) {
+            push @diff, $_;
+        }
+    }
+    foreach (sort @diff) {
+        print $_, "\n";
+    }
 }
 elsif ($cmd eq 'on') {
 }
