@@ -3,6 +3,18 @@
 use warnings;
 use strict;
 
+################################################################################
+
+sub git_dir {
+    chomp(my $dir = `git rev-parse --git-dir`);
+    my $cmd = 'cd $(dirname "' . $dir . '"); pwd';
+    chomp(my $parent = `$cmd`);
+    chomp(my $name = `basename $dir`);
+    "${parent}/$name";
+}
+
+################################################################################
+
 my $count = @ARGV;
 
 if ($count == 0) {
@@ -13,10 +25,15 @@ if ($count == 0) {
 my $cmd = shift;
 my @args = @ARGV;
 
+################################################################################
+
 if ($cmd eq 'list') {
     system 'cat "${GIT_HOOKS_HOME}/configs/hooks-list"';
 }
 elsif ($cmd eq 'enabled') {
+    my $hookdir = &git_dir . '/hooks';
+    chomp(my $res = `ls -I dispatcher "$hookdir"`);
+    print $res, "\n";
 }
 elsif ($cmd eq 'disabled') {
 }
