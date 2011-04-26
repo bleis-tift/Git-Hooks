@@ -3,9 +3,9 @@
 hookdir=`cd $(dirname "$0"); pwd`
 gitdir=`dirname "$hookdir"`
 
-cmp "${hookdir}/hooks-list" "${GIT_HOOKS_HOME}/configs/hooks-list" >/dev/null
+cmp "${hookdir}/dispatcher" "${GIT_HOOKS_HOME}/templates/dispatcher" >/dev/null
 if [ $? = 1 ]; then
-    # TODO : templateをアップデートする
+    cp "${GIT_HOOKS_HOME}/templates/dispatcher" "${hookdir}/dispatcher.new"
 fi
 
 if [ `basename "$0"` = 'pre-receive' -a -x "${hookdir}/ci" ]; then

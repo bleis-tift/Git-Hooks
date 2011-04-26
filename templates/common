@@ -1,5 +1,11 @@
 #! /bin/sh
 
+hookdir=`cd $(dirname "$0"); pwd`
+if [ -x "${hookdir}/dispatcher.new" ]; then
+    rm "${hookdir}/dispatcher"
+    mv "${hookdir}/dispatcher.new" "${hookdir}/dispatcher"
+fi
+
 dir=`cd $(dirname $0); pwd`
 name=`basename $0`
 exec "$dir/dispatcher" $name "$@"

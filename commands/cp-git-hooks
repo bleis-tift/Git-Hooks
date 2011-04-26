@@ -133,7 +133,6 @@ elsif ($cmd eq 'update') {
         }
 
         # テンプレートのコピー
-        copy "${home}/configs/hooks-list", "${templatedir}/hooks-list";
         copy "${home}/templates/dispatcher", "${templatedir}/dispatcher";
         copy "${home}/templates/common", "${templatedir}/common";
         foreach my $h (`cat "${home}/configs/hooks-list"`) {
@@ -153,7 +152,6 @@ elsif ($cmd eq 'update') {
         }
 
         # テンプレートのコピー
-        copy "${home}/configs/hooks-list", "${templatedir}/hooks-list";
         copy "${home}/templates/dispatcher", "${templatedir}/dispatcher";
         foreach my $h (`cat "${home}/configs/hooks-list"`) {
             chomp($h);
