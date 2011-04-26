@@ -58,7 +58,10 @@ if ($usesymlink) {
     }
 
     # GIT_HOOKS_HOMEの設定
-    `echo "export GIT_HOOKS_HOME=\\\"${githookshome}\\\"" >> "$gitconfig"`;
+    chomp(my $home = &exec_cmd('echo ${GIT_HOOKS_HOME}'));
+    if ($home ne $githookshome) {
+        `echo "export GIT_HOOKS_HOME=\\\"${githookshome}\\\"" >> "$gitconfig"`;
+    }
 
     # テンプレートのコピー
     copy "${githookshome}/templates/dispatcher", "${templatedir}/dispatcher";
@@ -81,7 +84,10 @@ else {
     }
 
     # GIT_HOOKS_HOMEの設定
-    `echo "export GIT_HOOKS_HOME=\\\"${githookshome}\\\"" >> "$gitconfig"`;
+    chomp(my $home = &exec_cmd('echo ${GIT_HOOKS_HOME}'));
+    if ($home ne $githookshome) {
+        `echo "export GIT_HOOKS_HOME=\\\"${githookshome}\\\"" >> "$gitconfig"`;
+    }
 
     # テンプレートのコピー
     copy "${githookshome}/templates/dispatcher", "${templatedir}/dispatcher";
