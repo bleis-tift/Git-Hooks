@@ -3,6 +3,8 @@
 use warnings;
 use strict;
 
+use File::Copy;
+
 ################################################################################
 
 sub exec_cmd {
@@ -23,6 +25,13 @@ sub list { &exec_cmd('cat "${GIT_HOOKS_HOME}/configs/hooks-list"'); }
 
 sub enabled { &exec_cmd('ls -I dispatcher "' . &git_dir . '/hooks"'); }
 
+sub prompt {
+    my $prompt = shift;
+    print $prompt;
+    chomp(my $str = <STDIN>);
+    $str;
+}
+
 ################################################################################
 
 my $count = @ARGV;
@@ -34,6 +43,7 @@ if ($count == 0) {
 
 my $cmd = shift;
 my @args = @ARGV;
+$count = @ARGV;
 
 ################################################################################
 
@@ -60,6 +70,30 @@ elsif ($cmd eq 'disabled') {
     }
 }
 elsif ($cmd eq 'on') {
+    if ($count == 0) {
+        @args = split(/\r\n|\r|\n/, &list);
+    }
+
+    my $gitdir = &git_dir;
+    my %conf = %{eval(&exec_cmd('cat "${GIT_HOOKS_HOME}/install-config"'))};
+    my $githookshome = $conf{githookshome};
+    if ($args[0] eq 'ci') {
+        my $url = $count == 2 ? $args[1] : &prompt('job url:');
+        `echo "#! /bin/sh\ncurl $url -so /dev/null" > "${gitdir}/hooks/ci"`;
+    }
+    else {
+        my $usesymlink = $conf{usesymlink} eq 'true';
+        foreach (@args) {
+            if ($_ eq 'ci') { next; }
+
+            if ($usesymlink) {
+                `ln -s "${githookshome}/templates/common" "${gitdir}/hooks/$_"`;
+            }
+            else {
+                copy "${githookshome}/templates/common", $gitdir . '/hooks/' . $_;
+            }
+        }
+    }
 }
 elsif ($cmd eq 'off') {
 }
