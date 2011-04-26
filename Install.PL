@@ -6,6 +6,12 @@ use strict;
 use File::Copy;
 use IO::File;
 
+sub exec_cmd {
+    my $cmd = shift;
+    chomp(my $res = `$cmd`);
+    $res;
+}
+
 my $count = @ARGV;
 if ($count == 0) {
     my @envs = `ls configs/Install-*.pl`;
@@ -52,7 +58,7 @@ if ($usesymlink) {
     # サブコマンドのコピー
     foreach my $i (`ls ${githookshome}/commands/* 2>/dev/null`) {
         chomp(my $orig = $i);
-        chomp(my $link = $gitcmddir . '/' . $1);
+        chomp(my $link = $gitcmddir . '/' . $i);
         `ln -s "$orig" "$link"`;
     }
 
@@ -76,7 +82,7 @@ else {
     # サブコマンドのコピー
     foreach my $i (`ls commands/* 2>/dev/null`) {
         chomp(my $src = './' . $i);
-        chomp(my $dst = $gitcmddir . '/' . $1);
+        chomp(my $dst = $gitcmddir . '/' . $i);
         copy $src, $dst
             or die '[' . $src . ' -> ' . $dst . '] ' . $!;
     }
