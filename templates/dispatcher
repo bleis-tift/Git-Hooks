@@ -8,6 +8,10 @@ if [ $? = 1 ]; then
     # TODO : templateをアップデートする
 fi
 
+if [ `basename "$0"` = 'pre-receive' -a -x "${hookdir}/ci" ]; then
+    "${hookdir}/ci"
+fi
+
 hook="${GIT_HOOKS_HOME}/hooks/$1"
 shift
 
