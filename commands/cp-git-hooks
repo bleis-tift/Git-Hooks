@@ -96,6 +96,17 @@ elsif ($cmd eq 'on') {
     }
 }
 elsif ($cmd eq 'off') {
+    if ($count == 0) {
+        @args = split(/\r\n|\r|\n/, &list);
+    }
+
+    my $gitdir = &git_dir;
+    my %conf = %{eval(&exec_cmd('cat "${GIT_HOOKS_HOME}/install-config"'))};
+    foreach (@args) {
+        if ($_ eq 'dispatcher') { next; }
+
+        `rm "${gitdir}/hooks/$_"` if (-e "${gitdir}/hooks/$_");
+    }
 }
 elsif ($cmd eq 'update') {
 }
