@@ -34,8 +34,8 @@ s/~/$ENV{HOME}/;
 $gitconfig = $_;
 
 # なぜかtouchしておかないとディレクトリが作られるので回避
-if ($env eq 'msys' && $gitconfig =~ /\.bashrc/) {
-    `touch ~/.bashrc`;
+if ($env eq 'msys') {
+    `touch "${gitconfig}"`;
 }
 
 # 自分自身をgithookshomeにすべてコピー
