@@ -50,8 +50,7 @@ copy "configs/Install-${env}.pl", "${githookshome}/install-config";
 # シンボリックリンクが使えるかどうかで分岐
 if ($usesymlink) {
     # サブコマンドのコピー
-    foreach my $i (`ls ${githookshome}/commands/ln-* 2>/dev/null`) {
-        $i =~ /ln-(.+)/;
+    foreach my $i (`ls ${githookshome}/commands/* 2>/dev/null`) {
         chomp(my $orig = $i);
         chomp(my $link = $gitcmddir . '/' . $1);
         `ln -s "$orig" "$link"`;
@@ -75,8 +74,7 @@ if ($usesymlink) {
 }
 else {
     # サブコマンドのコピー
-    foreach my $i (`ls commands/cp-* 2>/dev/null`) {
-        $i =~ /cp-(.+)/;
+    foreach my $i (`ls commands/* 2>/dev/null`) {
         chomp(my $src = './' . $i);
         chomp(my $dst = $gitcmddir . '/' . $1);
         copy $src, $dst
