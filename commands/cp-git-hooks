@@ -101,7 +101,6 @@ elsif ($cmd eq 'off') {
     }
 
     my $gitdir = &git_dir;
-    my %conf = %{eval(&exec_cmd('cat "${GIT_HOOKS_HOME}/install-config"'))};
     foreach (@args) {
         if ($_ eq 'dispatcher') { next; }
 
@@ -109,6 +108,60 @@ elsif ($cmd eq 'off') {
     }
 }
 elsif ($cmd eq 'update') {
+    if ($count == 0) {
+        # TODO : デフォルト値は設定ファイルか何かに持たせたい
+        $args[0] = 'origin/master';
+    }
+
+    my $home = &exec_cmd('echo ${GIT_HOOKS_HOME}');
+    my $gitdir = $home . '/.git';
+    chdir $home;
+    &exec_cmd('git remote update');
+    &exec_cmd('git reset --hard ' . $args[0]);
+
+    my %conf = %{eval(&exec_cmd('cat "${GIT_HOOKS_HOME}/install-config"'))};
+    my $usesymlink = $conf{usesymlink} eq 'true';
+    my $gitcmddir = $conf{gitcmddir};
+    my $templatedir = $conf{templatedir};
+    if ($usesymlink) {
+        # サブコマンドのコピー
+        foreach my $i (`ls ${home}/commands/ln-* 2>/dev/null`) {
+            $i =~ /ln-(.+)/;
+            chomp(my $orig = $i);
+            chomp(my $link = $gitcmddir . '/' . $1);
+            `ln -s "$orig" "$link"` unless (-e $link);
+        }
+
+        # テンプレートのコピー
+        copy "${home}/configs/hooks-list", "${templatedir}/hooks-list";
+        copy "${home}/templates/dispatcher", "${templatedir}/dispatcher";
+        copy "${home}/templates/common", "${templatedir}/common";
+        foreach my $h (`cat "${home}/configs/hooks-list"`) {
+            chomp($h);
+            if ($h ne 'ci') {
+                `ln -s "${home}/templates/common" "${templatedir}/$h` unless (-e "${templatedir}/$h");
+            }
+        }
+    }
+    else {
+        # サブコマンドのコピー
+        foreach my $i (`ls commands/cp-* 2>/dev/null`) {
+            $i =~ /cp-(.+)/;
+            chomp(my $src = './' . $i);
+            chomp(my $dst = $gitcmddir . '/' . $1);
+            copy $src, $dst;
+        }
+
+        # テンプレートのコピー
+        copy "${home}/configs/hooks-list", "${templatedir}/hooks-list";
+        copy "${home}/templates/dispatcher", "${templatedir}/dispatcher";
+        foreach my $h (`cat "${home}/configs/hooks-list"`) {
+            chomp($h);
+            if ($h ne 'ci') {
+                copy "${home}/templates/common", "${templatedir}/$h";
+            }
+        }
+    }
 }
 else {
     print "${cmd} is unknown command.\n";
