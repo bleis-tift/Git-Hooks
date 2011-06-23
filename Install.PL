@@ -5,6 +5,7 @@ use strict;
 
 use File::Copy;
 use IO::File;
+use File::Basename qw();
 
 sub exec_cmd {
     my $cmd = shift;
@@ -27,7 +28,7 @@ unless (-f "configs/Install-${env}.pl") {
     print "configs/Install-${env}.pl does not exist.\n";
     exit 1;
 }
-my %conf = %{eval(`cat "configs/Install-${env}.pl"`)};
+my %conf = %{+eval{require "configs/Install-${env}.pl"}};
 
 my $gitcmddir = $conf{gitcmddir};
 my $gitconfig = $count == 2 ? shift : $conf{gitconfig};
@@ -45,7 +46,10 @@ if ($env eq 'msys') {
 }
 
 # 自分自身をgithookshomeにすべてコピー
-unless (-e $gitconfig) { `mkdir -p "$gitconfig"`; }
+my $dirname = File::Basename::dirname($gitconfig);
+unless (-d $dirname) {
+    `mkdir -p '$dirname'`;
+}
 unless (-e "${githookshome}/.git") {
     `cp -fpR "./" "$githookshome"`;
 }
@@ -58,23 +62,22 @@ if ($usesymlink) {
     # サブコマンドのコピー
     foreach my $i (`ls ${githookshome}/commands/* 2>/dev/null`) {
         chomp(my $orig = $i);
-        chomp(my $link = $gitcmddir . '/' . $i);
+        chomp(my $link = $gitcmddir . '/' . File::Basename::basename($i));
         `ln -s "$orig" "$link"`;
     }
 
     # GIT_HOOKS_HOMEの設定
     chomp(my $home = &exec_cmd('echo ${GIT_HOOKS_HOME}'));
-    if ($home ne $githookshome) {
+    unless ($home eq $githookshome) {
         `echo "export GIT_HOOKS_HOME=\\\"${githookshome}\\\"" >> "$gitconfig"`;
     }
 
     # テンプレートのコピー
     copy "${githookshome}/templates/dispatcher", "${templatedir}/dispatcher";
-    copy "${githookshome}/templates/common", "${templatedir}/common";
     foreach my $h (`cat "${githookshome}/configs/hooks-list"`) {
         chomp($h);
-        if ($h ne 'ci') {
-            `ln -s "${githookshome}/templates/common" "${templatedir}/$h`;
+        unless ($h eq 'ci') {
+            `ln -s "${githookshome}/templates/common" "${templatedir}/$h"`;
         }
     }
 }
@@ -89,7 +92,7 @@ else {
 
     # GIT_HOOKS_HOMEの設定
     chomp(my $home = &exec_cmd('echo ${GIT_HOOKS_HOME}'));
-    if ($home ne $githookshome) {
+    unless ($home eq $githookshome) {
         `echo "export GIT_HOOKS_HOME=\\\"${githookshome}\\\"" >> "$gitconfig"`;
     }
 
@@ -97,7 +100,7 @@ else {
     copy "${githookshome}/templates/dispatcher", "${templatedir}/dispatcher";
     foreach my $h (`cat "${githookshome}/configs/hooks-list"`) {
         chomp($h);
-        if ($h ne 'ci') {
+        unless ($h eq 'ci') {
             copy "${githookshome}/templates/common", "${templatedir}/$h";
         }
     }
