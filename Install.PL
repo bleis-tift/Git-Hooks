@@ -5,12 +5,36 @@ use strict;
 
 use File::Copy;
 use IO::File;
-use File::Basename qw();
+use File::Basename;
+use Getopt::Long;
+
+my $verbose = 0;
+
+sub ln {
+    if ($verbose) {
+        print("ln -s @_\n");
+    }
+    symlink $_[0], $_[1];
+}
+
+sub cp {
+    if ($verbose) {
+        print("cp @_\n");
+    }
+    copy @_;
+}
 
 sub exec_cmd {
     my $cmd = shift;
+    if ($verbose) {
+        print($cmd, "\n");
+    }
     chomp(my $res = `$cmd`);
     $res;
+}
+
+{
+    my $res = GetOptions('verbose' => \$verbose);
 }
 
 my $count = @ARGV;
@@ -35,6 +59,10 @@ my $gitconfig = $count == 2 ? shift : $conf{gitconfig};
 my $templatedir = $conf{templatedir};
 my $githookshome = $conf{githookshome};
 my $usesymlink = $conf{usesymlink} eq 'true';
+unless ($usesymlink) {
+    no warnings 'redefine';
+    *main::ln = \&cp;
+}
 
 $_ = $gitconfig;
 s/~/$ENV{HOME}/;
@@ -46,38 +74,45 @@ if ($env eq 'msys') {
 }
 
 # 自分自身をgithookshomeにすべてコピー
-my $dirname = File::Basename::dirname($gitconfig);
+my $dirname = dirname($gitconfig);
 unless (-d $dirname) {
     `mkdir -p '$dirname'`;
 }
 unless (-e "${githookshome}/.git") {
+    if ($verbose) {
+        prit("cp -fpR \"./\" \"$githookshome\"", "\n");
+    }
     `cp -fpR "./" "$githookshome"`;
 }
 
 # インストールに使用した設定を保存
-copy "configs/Install-${env}.pl", "${githookshome}/install-config";
+cp("configs/Install-${env}.pl", "${githookshome}/install-config");
 
 # シンボリックリンクが使えるかどうかで分岐
 if ($usesymlink) {
     # サブコマンドのコピー
     foreach my $i (`ls ${githookshome}/commands/* 2>/dev/null`) {
         chomp(my $orig = $i);
-        chomp(my $link = $gitcmddir . '/' . File::Basename::basename($i));
-        `ln -s "$orig" "$link"`;
+        chomp(my $link = $gitcmddir . '/' . basename($i));
+        ln($orig, $link);
     }
 
     # GIT_HOOKS_HOMEの設定
-    chomp(my $home = &exec_cmd('echo ${GIT_HOOKS_HOME}'));
+    my $home = $ENV{GIT_HOOKS_HOME};
     unless ($home eq $githookshome) {
-        `echo "export GIT_HOOKS_HOME=\\\"${githookshome}\\\"" >> "$gitconfig"`;
+        if ($verbose) {
+            print('echo \'GIT_HOOKS_HOME=\"' . $githookshome . '\"; export GIT_HOOKS_HOME\' >> ' . $gitconfig, "\n");
+        }
+        open my $fh, '>>', $gitconfig or die;
+        print $fh, 'GIT_HOOKS_HOME="' . $githookshome . '"; export', "\n";
     }
 
     # テンプレートのコピー
-    copy "${githookshome}/templates/dispatcher", "${templatedir}/dispatcher";
+    cp("${githookshome}/templates/dispatcher", "${templatedir}/dispatcher");
     foreach my $h (`cat "${githookshome}/configs/hooks-list"`) {
         chomp($h);
         unless ($h eq 'ci') {
-            `ln -s "${githookshome}/templates/common" "${templatedir}/$h"`;
+            ln("${githookshome}/templates/common", "${templatedir}/$h");
         }
     }
 }
@@ -86,7 +121,7 @@ else {
     foreach my $i (`ls commands/* 2>/dev/null`) {
         chomp(my $src = './' . $i);
         chomp(my $dst = $gitcmddir . '/' . $i);
-        copy $src, $dst
+        cp($src, $dst)
             or die '[' . $src . ' -> ' . $dst . '] ' . $!;
     }
 
@@ -97,11 +132,11 @@ else {
     }
 
     # テンプレートのコピー
-    copy "${githookshome}/templates/dispatcher", "${templatedir}/dispatcher";
+    cp("${githookshome}/templates/dispatcher", "${templatedir}/dispatcher");
     foreach my $h (`cat "${githookshome}/configs/hooks-list"`) {
         chomp($h);
         unless ($h eq 'ci') {
-            copy "${githookshome}/templates/common", "${templatedir}/$h";
+            cp("${githookshome}/templates/common", "${templatedir}/$h");
         }
     }
 }
