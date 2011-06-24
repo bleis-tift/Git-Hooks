@@ -80,7 +80,7 @@ unless (-d $dirname) {
 }
 unless (-e "${githookshome}/.git") {
     if ($verbose) {
-        prit("cp -fpR \"./\" \"$githookshome\"", "\n");
+        print("cp -fpR \"./\" \"$githookshome\"", "\n");
     }
     `cp -fpR "./" "$githookshome"`;
 }
