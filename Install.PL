@@ -78,7 +78,7 @@ my $dirname = dirname($gitconfig);
 unless (-d $dirname) {
     `mkdir -p '$dirname'`;
 }
-unless (-e "${githookshome}/.git") {
+unless (-d "${githookshome}/.git") {
     if ($verbose) {
         print("cp -fpR \"./\" \"$githookshome\"", "\n");
     }
@@ -98,13 +98,13 @@ if ($usesymlink) {
     }
 
     # GIT_HOOKS_HOMEの設定
-    my $home = $ENV{GIT_HOOKS_HOME};
+    my $home = $ENV{GIT_HOOKS_HOME} || '';
     unless ($home eq $githookshome) {
         if ($verbose) {
             print('echo \'GIT_HOOKS_HOME=\"' . $githookshome . '\"; export GIT_HOOKS_HOME\' >> ' . $gitconfig, "\n");
         }
         open my $fh, '>>', $gitconfig or die;
-        print $fh, 'GIT_HOOKS_HOME="' . $githookshome . '"; export', "\n";
+        print $fh 'GIT_HOOKS_HOME="' . $githookshome . '"; export', "\n";
     }
 
     # テンプレートのコピー
