@@ -109,6 +109,7 @@ if ($usesymlink) {
 
     # テンプレートのコピー
     cp("${githookshome}/templates/dispatcher", "${templatedir}/dispatcher");
+    chmod(0755, "${templatedir}/dispatcher");
     foreach my $h (`cat "${githookshome}/configs/hooks-list"`) {
         chomp($h);
         unless ($h eq 'ci') {
