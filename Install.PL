@@ -104,7 +104,7 @@ if ($usesymlink) {
             print('echo \'GIT_HOOKS_HOME=\"' . $githookshome . '\"; export GIT_HOOKS_HOME\' >> ' . $gitconfig, "\n");
         }
         open my $fh, '>>', $gitconfig or die;
-        print $fh 'GIT_HOOKS_HOME="' . $githookshome . '"; export', "\n";
+        print $fh 'GIT_HOOKS_HOME="' . $githookshome . '"; export GIT_HOOKS_HOME', "\n";
     }
 
     # テンプレートのコピー
