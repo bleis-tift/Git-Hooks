@@ -32,12 +32,25 @@ sub prompt {
     $str;
 }
 
+sub usage {
+    print <<'    EOL';
+usage
+synopsys
+  git hooks list
+  git hooks enabled
+  git hooks disabled
+  git hooks on [commands...]
+  git hooks off [commands...]
+  git hooks update [branch]
+    EOL
+}
+
 ################################################################################
 
 my $count = @ARGV;
 
 if ($count == 0) {
-    # TODO : usage
+    usage();
     exit 0;
 }
 
@@ -163,6 +176,6 @@ elsif ($cmd eq 'update') {
 }
 else {
     print "${cmd} is unknown command.\n";
-    # usage?
+    usage();
     exit 1;
 }
