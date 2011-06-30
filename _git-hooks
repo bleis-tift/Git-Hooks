@@ -44,7 +44,8 @@ _git-hooks ()
             __git-hooks-on/off
           ;;
         (update)
-            __git-hooks-update
+          _arguments \
+              ':remote:__git_remotes'\
           ;;
       esac
     ;;
@@ -54,18 +55,22 @@ _git-hooks ()
 __git-hooks-on/off ()
 {
   local expl
-  declare -a versions
+  declare -a hooks
 
-  hooks=(${${(f)"$(_call_program hooks git hooks list 2> /dev/null | tr -d ' |*')"}})
+  hooks=(${${(f)"$(_call_program hooks git hooks list 2> /dev/null)"}})
   __git_command_successful || return
 
   _wanted hooks expl 'hooks' compadd $hooks
 }
 
-__git-hooks-update () {
-  local expl remotes
+__git_remotes() {
+  local expl
+  declare -a remotes
 
-  __git_branch_names
+  remotes=(${${(f)"$(_call_program remote git --git-dir=$GIT_HOOKS_HOME/.git for-each-ref --format='"%(refname)"' refs/remotes 2>/dev/null)"}#refs/remotes/})
+  __git_command_successful || return
+
+  _wanted remotes expl 'remotes' compadd $remotes
 }
 
 __git_branch_names () {
