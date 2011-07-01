@@ -47,6 +47,11 @@ synopsys
 
 ################################################################################
 
+unless (exists($ENV{GIT_HOOKS_HOME}) and -d $ENV{GIT_HOOKS_HOME}) {
+    print('environment valiable GIT_HOOKS_HOME is not set', "\n");
+    exit;
+}
+
 my $count = @ARGV;
 
 if ($count == 0) {
