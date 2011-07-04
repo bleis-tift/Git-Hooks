@@ -4,6 +4,7 @@ use warnings;
 use strict;
 
 use File::Copy;
+use File::Basename;
 
 ################################################################################
 
@@ -23,7 +24,9 @@ sub git_dir {
 
 sub list { &exec_cmd('cat "${GIT_HOOKS_HOME}/configs/hooks-list"'); }
 
-sub enabled { &exec_cmd('ls -I dispatcher "' . &git_dir . '/hooks"'); }
+sub enabled {
+    join("\n", grep {not(($_ eq 'dispatcher') or /\.sample$/)} map {basename $_} glob(git_dir.'/hooks/*'));
+}
 
 sub prompt {
     my $prompt = shift;
