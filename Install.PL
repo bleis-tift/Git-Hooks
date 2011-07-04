@@ -14,14 +14,14 @@ sub ln {
     if ($verbose) {
         print("ln -s @_\n");
     }
-    symlink $_[0], $_[1];
+    symlink $_[0], $_[1] or die;
 }
 
 sub cp {
     if ($verbose) {
         print("cp @_\n");
     }
-    copy @_;
+    copy @_ or die;
 }
 
 sub exec_cmd {
