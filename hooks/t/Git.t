@@ -42,6 +42,16 @@ hogehoge refs #3456
 piyopiyo
 EOS
 ;
+{
+    is(Git::append_msg_to_1st_line_if_not_exists($msg, 'refs #3456', 'closes #3456'), $expected, 'append_msg_to_1st_line_if_not_exists - normal');
+    (my $msg2 = $msg) =~ s/hogehoge/hogehoge refs #3456/;
+    is(Git::append_msg_to_1st_line_if_not_exists($msg2, 'refs #3456', 'closes #3456'), $expected, 'append_msg_to_1st_line_if_not_exists - included');
+    $msg2 =~ s/hogehoge/hogehoge refs #3456/;
+    is(Git::append_msg_to_1st_line_if_not_exists($msg2, 'refs #3456', 'closes #3456'), $expected, 'append_msg_to_1st_line_if_not_exists - multi');
+    $msg2 =~ s/hogehoge/hogehoge closes #3456/;
+    (my $expected2 = $expected) =~ s/refs/closes/;
+    is(Git::append_msg_to_1st_line_if_not_exists($msg2, 'refs #3456', 'closes #3456'), $expected2, 'append_msg_to_1st_line_if_not_exists - closed');
+}
 is(Git::append_msg_to_1st_line($msg, 'refs #3456'), $expected);
 chomp($msg);
 chomp($expected);
