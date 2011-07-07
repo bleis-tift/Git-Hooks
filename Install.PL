@@ -11,6 +11,7 @@ use Getopt::Long;
 my $verbose = 0;
 
 sub ln {
+    return if (-e $_[1]);
     if ($verbose) {
         print("ln -s @_\n");
     }
@@ -33,8 +34,12 @@ sub exec_cmd {
     $res;
 }
 
+my $prefix;
 {
-    my $res = GetOptions('verbose' => \$verbose);
+    my $res = GetOptions(
+        'verbose' => \$verbose,
+        'prefix=s' => \$prefix,
+    );
 }
 
 my $count = @ARGV;
@@ -53,6 +58,14 @@ unless (-f "configs/Install-${env}.pl") {
     exit 1;
 }
 my %conf = %{+eval{require "configs/Install-${env}.pl"}};
+if (defined($prefix) and -d $prefix) {
+    $prefix =~ s|/+$||;
+    foreach my $k (keys(%conf)) {
+        my $v = $conf{$k};
+        $v =~ s|^/usr(/)?|$prefix$1|;
+        $conf{$k} = $v;
+    }
+}
 
 my $gitcmddir = $conf{gitcmddir};
 my $gitconfig = $count == 2 ? shift : $conf{gitconfig};
@@ -76,11 +89,14 @@ if ($env eq 'msys') {
 # 自分自身をgithookshomeにすべてコピー
 my $dirname = dirname($gitconfig);
 unless (-d $dirname) {
-    `mkdir -p '$dirname'`;
+    exec_cmd("mkdir -p '$dirname'");
 }
 unless (-d "${githookshome}/.git") {
     if ($verbose) {
         print("cp -fpR \"./\" \"$githookshome\"", "\n");
+    }
+    unless (-d $githookshome) {
+        exec_cmd("mkdir -p '$githookshome'");
     }
     `cp -fpR "./" "$githookshome"`;
 }
@@ -90,6 +106,9 @@ cp("configs/Install-${env}.pl", "${githookshome}/install-config");
 
 # シンボリックリンクが使えるかどうかで分岐
 if ($usesymlink) {
+    unless (-d $gitcmddir) {
+        exec_cmd("mkdir -p '$gitcmddir'");
+    }
     # サブコマンドのコピー
     foreach my $i (`ls ${githookshome}/commands/* 2>/dev/null`) {
         chomp(my $orig = $i);
@@ -108,6 +127,9 @@ if ($usesymlink) {
     }
 
     # テンプレートのコピー
+    unless (-d $templatedir) {
+        exec_cmd("mkdir -p '$templatedir'");
+    }
     cp("${githookshome}/templates/dispatcher", "${templatedir}/dispatcher");
     chmod(0755, "${templatedir}/dispatcher");
     foreach my $h (`cat "${githookshome}/configs/hooks-list"`) {
