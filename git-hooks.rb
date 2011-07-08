@@ -1,7 +1,7 @@
 require 'formula'
 
 class GitHooks < Formula
-  head 'http://github.com/clairvy/Git-Hooks.git', :branch => 'rewrite'
+  head 'https://github.com/bleis-tift/Git-Hooks.git', :branch => 'rewrite'
   homepage 'https://github.com/bleis-tift/Git-Hooks'
 
   def install
