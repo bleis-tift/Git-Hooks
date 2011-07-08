@@ -99,6 +99,7 @@ unless (-d "${githookshome}/.git") {
         exec_cmd("mkdir -p '$githookshome'");
     }
     `cp -fpR "./" "$githookshome"`;
+    chmod(0755, $githookshome);
 }
 
 # インストールに使用した設定を保存
