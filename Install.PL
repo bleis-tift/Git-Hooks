@@ -105,62 +105,35 @@ unless (-d "${githookshome}/.git") {
 # インストールに使用した設定を保存
 cp("configs/Install-${env}.pl", "${githookshome}/install-config");
 
-# シンボリックリンクが使えるかどうかで分岐
-if ($usesymlink) {
-    unless (-d $gitcmddir) {
-        exec_cmd("mkdir -p '$gitcmddir'");
-    }
-    # サブコマンドのコピー
-    foreach my $i (`ls ${githookshome}/commands/* 2>/dev/null`) {
-        chomp(my $orig = $i);
-        chomp(my $link = $gitcmddir . '/' . basename($i));
-        ln($orig, $link);
-    }
-
-    # GIT_HOOKS_HOMEの設定
-    my $home = $ENV{GIT_HOOKS_HOME} || '';
-    unless ($home eq $githookshome) {
-        if ($verbose) {
-            print('echo \'GIT_HOOKS_HOME=\"' . $githookshome . '\"; export GIT_HOOKS_HOME\' >> ' . $gitconfig, "\n");
-        }
-        open my $fh, '>>', $gitconfig or die;
-        print $fh 'GIT_HOOKS_HOME="' . $githookshome . '"; export GIT_HOOKS_HOME', "\n";
-    }
-
-    # テンプレートのコピー
-    unless (-d $templatedir) {
-        exec_cmd("mkdir -p '$templatedir'");
-    }
-    cp("${githookshome}/templates/dispatcher", "${templatedir}/dispatcher");
-    chmod(0755, "${templatedir}/dispatcher");
-    foreach my $h (`cat "${githookshome}/configs/hooks-list"`) {
-        chomp($h);
-        unless ($h eq 'ci') {
-            ln("${githookshome}/templates/common", "${templatedir}/$h");
-        }
-    }
+unless (-d $gitcmddir) {
+    exec_cmd("mkdir -p '$gitcmddir'");
 }
-else {
-    # サブコマンドのコピー
-    foreach my $i (`ls commands/* 2>/dev/null`) {
-        chomp(my $src = './' . $i);
-        chomp(my $dst = $gitcmddir . '/' . $i);
-        cp($src, $dst)
-            or die '[' . $src . ' -> ' . $dst . '] ' . $!;
-    }
+# サブコマンドのコピー
+foreach my $i (`ls ${githookshome}/commands/* 2>/dev/null`) {
+    chomp(my $orig = $i);
+    chomp(my $link = $gitcmddir . '/' . basename($i));
+    ln($orig, $link);
+}
 
-    # GIT_HOOKS_HOMEの設定
-    chomp(my $home = &exec_cmd('echo ${GIT_HOOKS_HOME}'));
-    unless ($home eq $githookshome) {
-        `echo "export GIT_HOOKS_HOME=\\\"${githookshome}\\\"" >> "$gitconfig"`;
+# GIT_HOOKS_HOMEの設定
+my $home = $ENV{GIT_HOOKS_HOME} || '';
+unless ($home eq $githookshome) {
+    if ($verbose) {
+        print('echo \'GIT_HOOKS_HOME=\"' . $githookshome . '\"; export GIT_HOOKS_HOME\' >> ' . $gitconfig, "\n");
     }
+    open my $fh, '>>', $gitconfig or die;
+    print $fh 'GIT_HOOKS_HOME="' . $githookshome . '"; export GIT_HOOKS_HOME', "\n";
+}
 
-    # テンプレートのコピー
-    cp("${githookshome}/templates/dispatcher", "${templatedir}/dispatcher");
-    foreach my $h (`cat "${githookshome}/configs/hooks-list"`) {
-        chomp($h);
-        unless ($h eq 'ci') {
-            cp("${githookshome}/templates/common", "${templatedir}/$h");
-        }
+# テンプレートのコピー
+unless (-d $templatedir) {
+    exec_cmd("mkdir -p '$templatedir'");
+}
+cp("${githookshome}/templates/dispatcher", "${templatedir}/dispatcher");
+chmod(0755, "${templatedir}/dispatcher");
+foreach my $h (`cat "${githookshome}/configs/hooks-list"`) {
+    chomp($h);
+    unless ($h eq 'ci') {
+        ln("${githookshome}/templates/common", "${templatedir}/$h");
     }
 }
