@@ -130,7 +130,7 @@ elsif ($cmd eq 'off') {
 }
 elsif ($cmd eq 'update') {
     if ($count == 0) {
-        # TODO : ƒfƒtƒHƒ‹ƒg’l‚Íİ’èƒtƒ@ƒCƒ‹‚©‰½‚©‚É‚½‚¹‚½‚¢
+        # TODO : ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã¯è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã‹ä½•ã‹ã«æŒãŸã›ãŸã„
         $args[0] = 'origin/master';
     }
 
@@ -145,38 +145,37 @@ elsif ($cmd eq 'update') {
     my $gitcmddir = $conf{gitcmddir};
     my $templatedir = $conf{templatedir};
     if ($usesymlink) {
-        # ƒTƒuƒRƒ}ƒ“ƒh‚ÌƒRƒs[
-        foreach my $i (`ls ${home}/commands/ln-* 2>/dev/null`) {
-            $i =~ /ln-(.+)/;
+        # ã‚µãƒ–ã‚³ãƒãƒ³ãƒ‰ã®ã‚³ãƒ”ãƒ¼
+        foreach my $i (`ls ${home}/commands/* 2>/dev/null`) {
             chomp(my $orig = $i);
-            chomp(my $link = $gitcmddir . '/' . $1);
+            chomp(my $link = $gitcmddir . '/' . basename($i));
             `ln -s "$orig" "$link"` unless (-e $link);
         }
 
-        # ƒeƒ“ƒvƒŒ[ƒg‚ÌƒRƒs[
+        # ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã®ã‚³ãƒ”ãƒ¼
         copy "${home}/templates/dispatcher", "${templatedir}/dispatcher";
-        copy "${home}/templates/common", "${templatedir}/common";
+        chmod(0755, "${templatedir}/dispatcher");
         foreach my $h (`cat "${home}/configs/hooks-list"`) {
             chomp($h);
-            if ($h ne 'ci') {
+            unless ($h eq 'ci') {
                 `ln -s "${home}/templates/common" "${templatedir}/$h` unless (-e "${templatedir}/$h");
             }
         }
     }
     else {
-        # ƒTƒuƒRƒ}ƒ“ƒh‚ÌƒRƒs[
-        foreach my $i (`ls commands/cp-* 2>/dev/null`) {
-            $i =~ /cp-(.+)/;
-            chomp(my $src = './' . $i);
-            chomp(my $dst = $gitcmddir . '/' . $1);
+        # ã‚µãƒ–ã‚³ãƒãƒ³ãƒ‰ã®ã‚³ãƒ”ãƒ¼
+        foreach my $i (`ls commands/* 2>/dev/null`) {
+            chomp(my $src = $i);
+            chomp(my $dst = $gitcmddir . '/' . basename($i));
             copy $src, $dst;
         }
 
-        # ƒeƒ“ƒvƒŒ[ƒg‚ÌƒRƒs[
+        # ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã®ã‚³ãƒ”ãƒ¼
         copy "${home}/templates/dispatcher", "${templatedir}/dispatcher";
+        chmod(0755, "${templatedir}/dispatcher");
         foreach my $h (`cat "${home}/configs/hooks-list"`) {
             chomp($h);
-            if ($h ne 'ci') {
+            unless ($h eq 'ci') {
                 copy "${home}/templates/common", "${templatedir}/$h";
             }
         }
