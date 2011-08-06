@@ -58,7 +58,9 @@ unless (-f "configs/Install-${env}.pl") {
     exit 1;
 }
 my %conf = %{+eval{require "configs/Install-${env}.pl"}};
+my $use_prefix = 0;
 if (defined($prefix) and -d $prefix) {
+    $use_prefix = 1;
     $prefix =~ s|/+$||;
     foreach my $k (keys(%conf)) {
         my $v = $conf{$k};
@@ -103,7 +105,17 @@ unless (-d "${githookshome}/.git") {
 }
 
 # インストールに使用した設定を保存
-cp("configs/Install-${env}.pl", "${githookshome}/install-config");
+{
+    my $save_config_filename = "${githookshome}/install-config";
+    if ($use_prefix) {
+        open my $fh, '>', $save_config_filename or die;
+        use Data::Dumper ();
+        local $Data::Dumper::Terse = 1;
+        print $fh Data::Dumper->Dump([\%conf]);
+    } else {
+        cp("configs/Install-${env}.pl", $save_config_filename);
+    }
+}
 
 unless (-d $gitcmddir) {
     exec_cmd("mkdir -p '$gitcmddir'");
