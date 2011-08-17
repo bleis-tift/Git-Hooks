@@ -101,6 +101,7 @@ elsif ($cmd eq 'on') {
     if ($args[0] eq 'ci') {
         my $url = $count == 2 ? $args[1] : &prompt('job url:');
         `echo "#! /bin/sh\ncurl $url -so /dev/null" > "${gitdir}/hooks/ci"`;
+        chmod(0755, "${gitdir}/hooks/ci");
     }
     else {
         my $usesymlink = $conf{usesymlink} eq 'true';
