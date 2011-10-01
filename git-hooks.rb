@@ -9,19 +9,25 @@ class GitHooks < Formula
 
     bin.install "commands/git-hooks"
 
-    (prefix + "etc/bash_completion.d").install "git-hooks-completion.bash"
+    (prefix + "etc/zsh_completion.d").install "git-hooks-completion.zsh"
+  end
 
-    ohai 'You must set envirnment variable GIT_HOOKS_HOME to your startup script(like .bashrc).'
-    puts '# BEGIN example. (write into $HOME/.bashrc if use bash)'
-    puts 'GIT_HOOKS_HOME=/usr/local/share/git-core/Git-Hooks; export GIT_HOOKS_HOME'
-    puts '# END'
+  def caveats
+    <<-EOL.undent
+      If you have installed git-hooks, you can use settings below.
 
-    ohai 'If you use zsh and want to completion git hooks, write bellow setting in .zshrc'
-    puts '# BEGIN use git hooks completion'
-    puts 'source /usr/local/etc/bash_completion.d/git-hooks-completion.bash'
-    puts '# END'
+      You must set envirnment variable GIT_HOOKS_HOME to your startup script(like .bashrc).
+        # BEGIN example. (write into $HOME/.bashrc if use bash)
+        GIT_HOOKS_HOME=/usr/local/share/git-core/Git-Hooks; export GIT_HOOKS_HOME
+        # END
 
-    ohai 'and run bellow'
-    puts '$ git config --global alias.hooks hooks'
+      If you use zsh and want to completion git hooks, write below setting in .zshrc
+        # BEGIN use git hooks completion
+        source /usr/local/etc/zsh_completion.d/git-hooks-completion.zsh
+        # END
+
+      and run below
+        $ git config --global alias.hooks hooks
+    EOL
   end
 end
