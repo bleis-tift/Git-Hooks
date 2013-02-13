@@ -98,13 +98,13 @@ elsif ($cmd eq 'on') {
     my $gitdir = &git_dir;
     my %conf = %{eval(&exec_cmd('cat "${GIT_HOOKS_HOME}/install-config"'))};
     my $githookshome = $conf{githookshome};
+    my $usesymlink = $conf{usesymlink} eq 'true';
     if ($args[0] eq 'ci') {
         my $url = $count == 2 ? $args[1] : &prompt('job url:');
         `echo "#! /bin/sh\ncurl $url -so /dev/null" > "${gitdir}/hooks/ci"`;
         chmod(0755, "${gitdir}/hooks/ci");
     }
     else {
-        my $usesymlink = $conf{usesymlink} eq 'true';
         foreach (@args) {
             if ($_ eq 'ci') { next; }
 
@@ -114,6 +114,15 @@ elsif ($cmd eq 'on') {
             else {
                 copy "${githookshome}/templates/common", $gitdir . '/hooks/' . $_;
             }
+        }
+    }
+
+    unless (-e "${gitdir}/hooks/dispatcher") {
+        if ($usesymlink) {
+            `ln -s "${githookshome}/templates/dispatcher" "${gitdir}/hooks/dispatcher"`;
+        }
+        else {
+            copy "${githookshome}/templates/common", "${gitdir}/hooks/dispatcher";
         }
     }
 }
@@ -127,6 +136,10 @@ elsif ($cmd eq 'off') {
         if ($_ eq 'dispatcher') { next; }
 
         `rm "${gitdir}/hooks/$_"` if (-e "${gitdir}/hooks/$_");
+    }
+
+    if (-e "${gitdir}/hooks/dispatcher") {
+        `rm "${gitdir}/hooks/dispatcher"`;
     }
 }
 elsif ($cmd eq 'update') {
