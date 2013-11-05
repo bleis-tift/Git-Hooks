@@ -16,7 +16,11 @@ sub exec_cmd {
 
 sub git_hooks_home {
     unless ($ENV{GIT_HOOKS_HOME}) {
-        return '/usr/share/git-core/Git-Hooks';
+        my $git_hooks_home_by_cmd = &exec_cmd('git config --get hooks.home');
+        unless ($git_hooks_home_by_cmd and -d $git_hooks_home_by_cmd) {
+            return '/usr/share/git-core/Git-Hooks';
+        }
+        return $git_hooks_home_by_cmd;
     }
     return $ENV{GIT_HOOKS_HOME};
 }
