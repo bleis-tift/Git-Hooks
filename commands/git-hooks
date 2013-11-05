@@ -14,6 +14,13 @@ sub exec_cmd {
     $res;
 }
 
+sub git_hooks_home {
+    unless ($ENV{GIT_HOOKS_HOME}) {
+        return '/usr/share/git-core/Git-Hooks';
+    }
+    return $ENV{GIT_HOOKS_HOME};
+}
+
 sub git_dir {
     chomp(my $dir = `git rev-parse --git-dir`);
     my $cmd = 'cd $(dirname "' . $dir . '"); pwd';
@@ -51,8 +58,8 @@ synopsys
 ################################################################################
 
 unless (exists($ENV{GIT_HOOKS_HOME}) and -d $ENV{GIT_HOOKS_HOME}) {
-    print('environment valiable GIT_HOOKS_HOME is not set', "\n");
-    exit;
+    warn('environment valiable GIT_HOOKS_HOME is not set. use default(', git_hooks_home, ')', "\n");
+    $ENV{GIT_HOOKS_HOME} = git_hooks_home;
 }
 
 my $count = @ARGV;
